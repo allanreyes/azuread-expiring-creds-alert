@@ -1,0 +1,1 @@
+# azuread-expiring-creds-alert
