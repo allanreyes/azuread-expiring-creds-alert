@@ -1,24 +1,19 @@
 param($Timer)
 
-$currentUTCtime = (Get-Date).ToUniversalTime()
-Write-Host "PowerShell timer trigger function is running. TIME: $currentUTCtime"
+Write-Host "PowerShell timer trigger function is running. TIME: $((Get-Date).ToUniversalTime())"
 
 $Applications = Get-MgApplication -all
-$Now = Get-Date
-$ExpiryDate = $Now.AddDays([int]$env:DaysUntilExpiration)
+$ExpiryDate = (Get-Date).AddDays([int]$env:DaysUntilExpiration)
 $Expiring = @()
 
 foreach ($App in $Applications) {
-   
     $AppName = $App.DisplayName
     $ObjectID = $App.Id
     $ClientID = $App.AppId    
-    $AppCreds = Get-MgApplication -ApplicationId $ObjectID | Select-Object PasswordCredentials, KeyCredentials
     $Owner = Get-Owner $ObjectID
 
-    $Secrets = $AppCreds.PasswordCredentials | Where-Object { $_.EndDateTime -le $ExpiryDate }
-    foreach ($Secret in $Secrets) {
-        if ($EndDate -ge $ExpiryDate) {
+    foreach ($Secret in $App.PasswordCredentials) {
+        if ($Secret.EndDateTime -le $ExpiryDate) {
             $Expiring += [PSCustomObject]@{
                 'ApplicationName' = $AppName
                 'ApplicationID'   = $ClientID
@@ -31,9 +26,8 @@ foreach ($App in $Applications) {
         }       
     }
 
-    $Certs = $AppCreds.KeyCredentials | Where-Object { $_.EndDateTime -le $ExpiryDate }
-    foreach ($Cert in $Certs) {
-        if ($EndDate -ge $ExpiryDate) {
+    foreach ($Cert in $App.KeyCredentials) {
+        if ($Cert.EndDateTime -le $ExpiryDate) {
             $Expiring += [PSCustomObject]@{
                 'ApplicationName' = $AppName
                 'ApplicationID'   = $ClientID
@@ -45,8 +39,8 @@ foreach ($App in $Applications) {
             }
         }       
     }
+
 }
 
-Write-host ($Expiring | ConvertTo-Json)
-
-Write-Host "PowerShell timer trigger function ran! TIME: $currentUTCtime"
+Write-host "Found $($Expiring.Length) credentials that have already expired or are expiring before: $ExpiryDate"
+Write-Host "PowerShell timer trigger function ran! TIME: $((Get-Date).ToUniversalTime())"

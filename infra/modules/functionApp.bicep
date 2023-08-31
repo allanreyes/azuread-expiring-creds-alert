@@ -20,6 +20,9 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
   name: appName
   location: location
   kind: 'functionapp'
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     serverFarmId: hostingPlan.id
     httpsOnly: true
@@ -42,16 +45,25 @@ resource functionAppConfig 'Microsoft.Web/sites/config@2022-03-01' = {
       }
       {
         name: 'FUNCTIONS_WORKER_RUNTIME'
-        value: 'dotnet'
+        value: 'powershell'
       }      
       {
         name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
         value: aiConnectionString
+      }
+      {
+        name: 'DaysUntilExpiration'
+        value: '14'
       }
     ]
     ftpsState: 'FtpsOnly'
     minTlsVersion: '1.2'
     alwaysOn: true
     use32BitWorkerProcess: false
+    cors: {
+      allowedOrigins: [
+        'https://portal.azure.com'
+      ]
+    }
   }
 }

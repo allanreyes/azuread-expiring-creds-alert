@@ -5,6 +5,8 @@ param location string = deployment().location
 
 var resourceGroupName = 'rg-${suffix}'
 var appName = 'fn-${suffix}-${uniqueString(rg.id)}'
+var storageNameTemp = 'sa${suffix}${uniqueString(rg.id)}'
+var storageName = length(storageNameTemp) > 24 ? substring(storageNameTemp, 0, 24) : storageNameTemp
 
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: resourceGroupName
@@ -16,7 +18,7 @@ module storageAccount './modules/storageAccount.bicep' = {
   scope: rg
   params: {
     location: rg.location
-    storageName: 'sa${suffix}${uniqueString(rg.id)}'
+    storageName: storageName
   }
 }
 
