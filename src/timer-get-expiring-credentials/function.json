@@ -5,6 +5,12 @@
       "type": "timerTrigger",
       "direction": "in",
       "schedule": "0 0 10 * * *"
+    },
+    {
+      "tableName": "Notifications",
+      "name": "TableBinding",
+      "type": "table",
+      "direction": "out"
     }
   ]
 }
