@@ -7,17 +7,22 @@
 ###
 
 # Deploy Azure resources
-$location = Read-Host "Which Azure location would you like to deploy to? (e.g. canadaeast)" -ForegroundColor Yellow
-$suffix = Read-Host "What suffix would you like to use for your resources? (e.g. credsalert)" -ForegroundColor Yellow
-$daysUntilExpiration = Read-Host "How many days before the credentials expire should it send a notification? (e.g. 14)" -ForegroundColor Yellow
-$emailFrom = Read-Host "What email address should the notification come from? (e.g. admin@contoso.com)" -ForegroundColor Yellow
-$emailTo = Read-Host "What email address should the notification go to? (e.g. mailinglist@contoso.com)" -ForegroundColor Yellow
+Write-Host "Which Azure location would you like to deploy to? (e.g. canadaeast)" -ForegroundColor Yellow
+$location = Read-Host
+Write-Host "What suffix would you like to use for your resources? (e.g. credsalert)" -ForegroundColor Yellow
+$suffix = Read-Host 
+Write-Host "How many days before the credentials expire should it send a notification? (e.g. 14)" -ForegroundColor Yellow
+$daysUntilExpiration = Read-Host 
+Write-Host "What email address should the notification come from? (e.g. admin@contoso.com)" -ForegroundColor Yellow
+$emailFrom = Read-Host
+Write-Host "What email address should the notification go to? (e.g. mailinglist@contoso.com)" -ForegroundColor Yellow
+$emailTo = Read-Host
 
 $params = @{ 
-    suffix = $suffix
+    suffix              = $suffix
     daysUntilExpiration = $daysUntilExpiration
-    emailFrom = $emailFrom 
-    emailTo = $emailTo
+    emailFrom           = $emailFrom 
+    emailTo             = $emailTo
 }
 
 Write-Host "Deploying Azure resources..."
@@ -33,8 +38,8 @@ if ($deployment.ProvisioningState -eq "Succeeded") {
 
     $functionAppName = $deployment.Outputs["appName"].Value
     Start-Sleep -Seconds 30
-
-    # Assign Graph API permissions to function app identity
+    
+    Write-Host "Assigning Graph API permissions to function app identity..."
     Install-Module AzureAD -Scope CurrentUser -Force
     Connect-AzureAD -Identity
 
@@ -42,16 +47,17 @@ if ($deployment.ProvisioningState -eq "Succeeded") {
     $MSI = Get-AzADServicePrincipal -DisplayName $functionAppName
     $Graph = Get-AzADServicePrincipal -ApplicationId "00000003-0000-0000-c000-000000000000" # Microsoft Graph App ID (DON'T CHANGE)
 
-    foreach($permission in $permissions){
+    foreach ($permission in $permissions) {
         $AppRole = $Graph.AppRole | Where-Object { $_.Value -eq $permission }
         New-AzureAdServiceAppRoleAssignment -ObjectId $MSI.Id -PrincipalId $MSI.Id `
             -ResourceId $Graph.Id -Id $AppRole.Id
     }
 
-    # Deploy function app code
+    Write-Host "Deploying function app code..."
     Set-Location -Path src
     func azure functionapp publish $functionAppName --powershell 
-} else {
+}
+else {
     Write-Warning "Deployment failed."
 }
 
