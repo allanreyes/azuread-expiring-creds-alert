@@ -20,11 +20,11 @@ $daysUntilExpiration = Read-Host
 $daysUntilExpiration = [string]::IsNullOrEmpty($daysUntilExpiration) ? 14 : $daysUntilExpiration
 
 $loggedInUser = az account show --query user.name -o tsv
-Write-Host "What email address should the notification come from? (e.g. $($loggedInUser))" -ForegroundColor Yellow
+Write-Host "What email address should the notification come from? (Default: $($loggedInUser))" -ForegroundColor Yellow
 $emailFrom = Read-Host
 $emailFrom = [string]::IsNullOrEmpty($emailFrom) ? $loggedInUser : $emailFrom
 
-Write-Host "What email address should the notification go to? (e.g. $($loggedInUser))" -ForegroundColor Yellow
+Write-Host "What email address should the notification go to? (Default: $($loggedInUser))" -ForegroundColor Yellow
 $emailTo = Read-Host
 $emailTo = [string]::IsNullOrEmpty($emailTo) ? $loggedInUser : $emailTo
 
@@ -35,25 +35,28 @@ $params = @{
     emailTo             = $emailTo
 }
 
+Write-Host "----------------------------------------"
+Write-Host "Deploying Azure resources..."
+
 $deployment = New-AzSubscriptionDeployment -Name "$($params.suffix)-deployment" `
     -Location $location `
     -TemplateFile ".\infra\main.bicep" `
-    -TemplateParameterObject $params `
-    -AsJob
-    Write-Host "----------------------------------------"
+    -TemplateParameterObject $params 
 
-Write-Host "Deploying Azure resources..."
-$timeout = (Get-Date).AddMinutes(10);
-while($true){
-    Start-Sleep -Seconds 5
-    Write-Host "." -NoNewline
-    if ($deployment.ProvisioningState -eq "Succeeded" -or (Get-Date) -ge $timeout){
-        break;
-    }
-}    
+
+
+# $timeout = (Get-Date).AddMinutes(10);
+# while($true){
+#     Start-Sleep -Seconds 5
+#     Write-Host "." -NoNewline
+#     if ($deployment.ProvisioningState -eq "Succeeded" -or (Get-Date) -ge $timeout){
+#         break;
+#     }
+#}    
 
 if ($deployment.ProvisioningState -ne "Succeeded") {
     Write-Warning "Deployment failed or has timed out."
+    return
 }
 
 $functionAppName = $deployment.Outputs["appName"].Value
