@@ -2,7 +2,7 @@ param appName string
 param location string = resourceGroup().location
 param saConnectionString string
 param aiConnectionString string
-param daysUntilExpiration int
+param daysUntilExpiration string
 param emailTo string
 param sendEmailUrl string
 

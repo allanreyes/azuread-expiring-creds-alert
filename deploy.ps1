@@ -2,7 +2,7 @@
 # Install-Module Az.Accounts -Scope CurrentUser -Force -AllowClobber
 # Install-Module Az.Resources -Scope CurrentUser -Force -AllowClobber
 Install-Module AzureAD -Scope CurrentUser -Force
-Import-Module AzureAD
+#Import-Module AzureAD
 
 # Connect-AzAccount
 Connect-AzureAD -Identity
@@ -12,7 +12,7 @@ Connect-AzureAD -Identity
 $location = "canadaeast"
 $params = @{ 
     suffix = "credsalert"
-    daysUntilExpiration = 14
+    daysUntilExpiration = "14"
     emailFrom = "admin@contoso.com"
     emailTo = "mailinglist@contoso.com"
 }

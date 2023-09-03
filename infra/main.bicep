@@ -2,7 +2,7 @@ targetScope = 'subscription'
 
 param suffix string
 param location string = deployment().location
-param daysUntilExpiration int
+param daysUntilExpiration string
 param emailFrom string
 param emailTo string
 
