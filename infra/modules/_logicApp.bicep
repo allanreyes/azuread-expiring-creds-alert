@@ -100,4 +100,4 @@ resource workflows_la_credsalert_name_resource 'Microsoft.Logic/workflows@2019-0
 }
 
 var logicAppUrl = listCallbackURL('${resourceId('Microsoft.Logic/workflows', logicAppName)}/triggers/manual', '2016-06-01').value
-output logicAppUrl string = logicAppUrl 
+output logicAppUrl string = logicAppUrl
