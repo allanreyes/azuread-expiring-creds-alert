@@ -47,7 +47,7 @@ Write-host "Found $($Expiring.Length) credentials that have already expired or a
 foreach ($Row in $Expiring) {
     Push-OutputBinding -Name TableBinding -Value @{
         PartitionKey = $Row.ApplicationID
-        RowKey = Get-Date -Format "yyyy-MM-dd-HH-mm"
+        RowKey = [Guid]::NewGuid().ToString()
         ApplicationName = $Row.ApplicationName
         Owner           = $Row.Owner
         Type            = $Row.Type

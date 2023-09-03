@@ -7,7 +7,7 @@
       "schedule": "0 0 10 * * *"
     },
     {
-      "tableName": "Notifications",
+      "tableName": "ExpiringCredentials",
       "name": "TableBinding",
       "type": "table",
       "direction": "out"

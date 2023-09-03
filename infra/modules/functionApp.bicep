@@ -2,6 +2,9 @@ param appName string
 param location string = resourceGroup().location
 param saConnectionString string
 param aiConnectionString string
+param daysUntilExpiration int
+param emailTo string
+param sendEmailUrl string
 
 resource hostingPlan 'Microsoft.Web/serverfarms@2021-03-01' = {
   name: '${appName}-asp'
@@ -53,7 +56,15 @@ resource functionAppConfig 'Microsoft.Web/sites/config@2022-03-01' = {
       }
       {
         name: 'DaysUntilExpiration'
-        value: '14'
+        value: daysUntilExpiration
+      }
+      {
+        name: 'EmailTo'
+        value: emailTo
+      }
+      {
+        name: 'SendEmailUrl'
+        value: sendEmailUrl
       }
     ]
     ftpsState: 'FtpsOnly'

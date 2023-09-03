@@ -10,7 +10,13 @@ az login
 
 # Deploy Azure resources
 $location = "canadaeast"
-$params = @{ suffix = "credsalert"}
+$params = @{ 
+    suffix = "credsalert"
+    daysUntilExpiration = 14
+    emailFrom = "someone@contoso.com"
+    emailTo = "someone@contoso.com"
+}
+
 $deployment = New-AzSubscriptionDeployment -Name "$($params.suffix)-deployment" `
     -Location $location `
     -TemplateFile ".\infra\main.bicep" `
@@ -33,4 +39,3 @@ foreach($permission in $permissions){
 # Deploy function app code
 Set-Location -Path src
 func azure functionapp publish $functionAppName --powershell 
-
