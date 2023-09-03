@@ -13,7 +13,10 @@ $location = [string]::IsNullOrEmpty($location) ? "canadaeast" : $location
 
 Write-Host "What suffix would you like to use for your resources? (Default: credsalert)" -ForegroundColor Yellow
 $suffix = Read-Host
+$suffix = [string]::IsNullOrEmpty($suffix) ? "canadaeast" : $suffix
+
 Write-Host "How many days before the credentials expire should it send a notification? (Default: 14)" -ForegroundColor Yellow
+$daysUntilExpiration = Read-Host
 $daysUntilExpiration = [string]::IsNullOrEmpty($daysUntilExpiration) ? 14 : $daysUntilExpiration
 
 $loggedInUser = az account show --query user.name -o tsv
