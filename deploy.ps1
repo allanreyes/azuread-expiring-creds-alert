@@ -1,20 +1,20 @@
 # Use Windows PowerShell instead of PowerShell Core because of the AzureAD module dependency
-Install-Module Az.Accounts -Scope CurrentUser -Force -AllowClobber
-Install-Module Az.Resources -Scope CurrentUser -Force -AllowClobber
-Install-Module AzureAD -Scope CurrentUser -Force -AllowClobber
+# Install-Module Az.Accounts -Scope CurrentUser -Force -AllowClobber
+# Install-Module Az.Resources -Scope CurrentUser -Force -AllowClobber
+Install-Module AzureAD -Scope CurrentUser -Force
 Import-Module AzureAD
 
-Connect-AzAccount
-Connect-AzureAD
-az login
+# Connect-AzAccount
+Connect-AzureAD -Identity
+# az login
 
 # Deploy Azure resources
 $location = "canadaeast"
 $params = @{ 
     suffix = "credsalert"
     daysUntilExpiration = 14
-    emailFrom = "someone@contoso.com"
-    emailTo = "someone@contoso.com"
+    emailFrom = "admin@contoso.com"
+    emailTo = "mailinglist@contoso.com"
 }
 
 $deployment = New-AzSubscriptionDeployment -Name "$($params.suffix)-deployment" `
