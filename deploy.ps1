@@ -7,16 +7,23 @@
 ###
 
 # Deploy Azure resources
-Write-Host "Which Azure location would you like to deploy to? (e.g. canadaeast)" -ForegroundColor Yellow
+Write-Host "Which Azure location would you like to deploy to? (Default: canadaeast)" -ForegroundColor Yellow
 $location = Read-Host
-Write-Host "What suffix would you like to use for your resources? (e.g. credsalert)" -ForegroundColor Yellow
-$suffix = Read-Host 
-Write-Host "How many days before the credentials expire should it send a notification? (e.g. 14)" -ForegroundColor Yellow
-$daysUntilExpiration = Read-Host 
-Write-Host "What email address should the notification come from? (e.g. admin@contoso.com)" -ForegroundColor Yellow
+$location = [string]::IsNullOrEmpty($location) ? "canadaeast" : $location
+
+Write-Host "What suffix would you like to use for your resources? (Default: credsalert)" -ForegroundColor Yellow
+$suffix = Read-Host
+Write-Host "How many days before the credentials expire should it send a notification? (Default: 14)" -ForegroundColor Yellow
+$daysUntilExpiration = [string]::IsNullOrEmpty($daysUntilExpiration) ? 14 : $daysUntilExpiration
+
+$loggedInUser = az account show --query user.name -o tsv
+Write-Host "What email address should the notification come from? (e.g. $($loggedInUser))" -ForegroundColor Yellow
 $emailFrom = Read-Host
-Write-Host "What email address should the notification go to? (e.g. mailinglist@contoso.com)" -ForegroundColor Yellow
+$emailFrom = [string]::IsNullOrEmpty($emailFrom) ? $loggedInUser : $emailFrom
+
+Write-Host "What email address should the notification go to? (e.g. $($loggedInUser))" -ForegroundColor Yellow
 $emailTo = Read-Host
+$emailTo = [string]::IsNullOrEmpty($emailTo) ? $loggedInUser : $emailTo
 
 $params = @{ 
     suffix              = $suffix
@@ -24,7 +31,6 @@ $params = @{
     emailFrom           = $emailFrom 
     emailTo             = $emailTo
 }
-
 
 $deployment = New-AzSubscriptionDeployment -Name "$($params.suffix)-deployment" `
     -Location $location `
@@ -38,7 +44,7 @@ $timeout = (Get-Date).AddMinutes(10);
 while($true){
     Start-Sleep -Seconds 5
     Write-Host "." -NoNewline
-    if ($deployment.ProvisioningState -eq "Succeeded" -or (Get-Date -gt $timeout)){
+    if ($deployment.ProvisioningState -eq "Succeeded" -or (Get-Date) -ge $timeout){
         break;
     }
 }    
