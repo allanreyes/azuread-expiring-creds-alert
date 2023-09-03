@@ -64,7 +64,8 @@ Start-Sleep -Seconds 10
 
 Write-Host "Assigning Graph API permissions to function app identity..."
 Install-Module AzureAD -Scope CurrentUser -Force
-Connect-AzureAD -Identity
+$token = Get-AzAccessToken -ResourceTypeName AadGraph
+Connect-AzureAD -AadAccessToken $token.Token 
 
 $permissions = "Application.ReadWrite.All", "Directory.Read.All"   
 $MSI = Get-AzADServicePrincipal -DisplayName $functionAppName
