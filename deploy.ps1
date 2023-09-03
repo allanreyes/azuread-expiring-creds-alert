@@ -25,40 +25,45 @@ $params = @{
     emailTo             = $emailTo
 }
 
-Write-Host "Deploying Azure resources..."
+
 $deployment = New-AzSubscriptionDeployment -Name "$($params.suffix)-deployment" `
     -Location $location `
     -TemplateFile ".\infra\main.bicep" `
-    -TemplateParameterObject $params
+    -TemplateParameterObject $params `
+    -AsJob
+    Write-Host "----------------------------------------"
 
-$deploymentDetailsBsseUrl = "https://portal.azure.com/#view/HubsExtension/DeploymentDetailsBlade/~/overview/id/"
-Write-Host $deploymentDetailsBsseUrl + [System.Web.HttpUtility]::UrlEncode($deployment.TemplateLink)
-
-if ($deployment.ProvisioningState -eq "Succeeded") {
-
-    $functionAppName = $deployment.Outputs["appName"].Value
-    Start-Sleep -Seconds 30
-    
-    Write-Host "Assigning Graph API permissions to function app identity..."
-    Install-Module AzureAD -Scope CurrentUser -Force
-    Connect-AzureAD -Identity
-
-    $permissions = "Application.ReadWrite.All", "Directory.Read.All"   
-    $MSI = Get-AzADServicePrincipal -DisplayName $functionAppName
-    $Graph = Get-AzADServicePrincipal -ApplicationId "00000003-0000-0000-c000-000000000000" # Microsoft Graph App ID (DON'T CHANGE)
-
-    foreach ($permission in $permissions) {
-        $AppRole = $Graph.AppRole | Where-Object { $_.Value -eq $permission }
-        New-AzureAdServiceAppRoleAssignment -ObjectId $MSI.Id -PrincipalId $MSI.Id `
-            -ResourceId $Graph.Id -Id $AppRole.Id
+Write-Host "Deploying Azure resources..."
+$timeout = (Get-Date).AddMinutes(10);
+while($true){
+    Start-Sleep -Seconds 5
+    Write-Host "." -NoNewline
+    if ($deployment.ProvisioningState -eq "Succeeded" -or (Get-Date -gt $timeout)){
+        break;
     }
+}    
 
-    Write-Host "Deploying function app code..."
-    Set-Location -Path src
-    func azure functionapp publish $functionAppName --powershell 
-}
-else {
-    Write-Warning "Deployment failed."
+if ($deployment.ProvisioningState -ne "Succeeded") {
+    Write-Warning "Deployment failed or has timed out."
 }
 
+$functionAppName = $deployment.Outputs["appName"].Value
+Start-Sleep -Seconds 10
 
+Write-Host "Assigning Graph API permissions to function app identity..."
+Install-Module AzureAD -Scope CurrentUser -Force
+Connect-AzureAD -Identity
+
+$permissions = "Application.ReadWrite.All", "Directory.Read.All"   
+$MSI = Get-AzADServicePrincipal -DisplayName $functionAppName
+$Graph = Get-AzADServicePrincipal -ApplicationId "00000003-0000-0000-c000-000000000000" # Microsoft Graph App ID (DON'T CHANGE)
+
+foreach ($permission in $permissions) {
+    $AppRole = $Graph.AppRole | Where-Object { $_.Value -eq $permission }
+    New-AzureAdServiceAppRoleAssignment -ObjectId $MSI.Id -PrincipalId $MSI.Id `
+        -ResourceId $Graph.Id -Id $AppRole.Id
+}
+
+Write-Host "Deploying function app code..."
+Set-Location -Path src
+func azure functionapp publish $functionAppName --powershell 
