@@ -53,7 +53,12 @@ Start-Sleep -Seconds 10
 
 Write-Host "Assigning Graph API permissions to function app identity..."
 
-Install-Module Microsoft.Graph -Force
+if(Get-Module -ListAvailable -Name Microsoft.Graph) { 
+    Update-Module Microsoft.Graph
+} else {
+    Install-Module Microsoft.Graph -Force
+}
+
 Connect-MgGraph -Identity -NoWelcome
 
 $permissions = "Application.ReadWrite.All", "Directory.Read.All"   
@@ -65,11 +70,13 @@ foreach ($permission in $permissions) {
     $params = @{
         principalId = $MSI.Id
         resourceId = $Graph.Id
-        appRoleId = $Graph.AppRoles | Where-Object { $_.Value -eq $permission }
+        appRoleId = $Graph.AppRoles | Where-Object { $_.Value -eq $permission } | Select-Object -ExpandProperty Id
     }
-    New-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $MSI.Id  -BodyParameter $params
+    New-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $MSI.Id -BodyParameter $params
 }
 
 Write-Host "Deploying function app code..."
 Set-Location -Path src
 func azure functionapp publish $functionAppName --powershell 
+
+Write-Host "Completed"
