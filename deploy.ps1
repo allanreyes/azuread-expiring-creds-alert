@@ -82,8 +82,9 @@ Set-Location -Path src
 func azure functionapp publish $functionAppName --powershell 
 
 Write-Host "Completed"
-
+Write-Host "IMPORTANT: Make sure you authorize the Office 365 connection before running the function." -ForegroundColor Green
 Write-Host "----------------------------------------"
+
 while ($true) {
     Write-Host "Would you like to run the function now? (y/n)" -ForegroundColor Yellow
     $runNow = Read-Host
