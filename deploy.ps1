@@ -13,7 +13,7 @@ $location = [string]::IsNullOrEmpty($location) ? "canadaeast" : $location
 
 Write-Host "What suffix would you like to use for your resources? (Default: credsalert)" -ForegroundColor Yellow
 $suffix = Read-Host
-$suffix = [string]::IsNullOrEmpty($suffix) ? "canadaeast" : $suffix
+$suffix = [string]::IsNullOrEmpty($suffix) ? "credsalert" : $suffix
 
 Write-Host "How many days before the credentials expire should it send a notification? (Default: 14)" -ForegroundColor Yellow
 $daysUntilExpiration = Read-Host
@@ -43,17 +43,6 @@ $deployment = New-AzSubscriptionDeployment -Name "$($params.suffix)-deployment" 
     -TemplateFile ".\infra\main.bicep" `
     -TemplateParameterObject $params 
 
-
-
-# $timeout = (Get-Date).AddMinutes(10);
-# while($true){
-#     Start-Sleep -Seconds 5
-#     Write-Host "." -NoNewline
-#     if ($deployment.ProvisioningState -eq "Succeeded" -or (Get-Date) -ge $timeout){
-#         break;
-#     }
-#}    
-
 if ($deployment.ProvisioningState -ne "Succeeded") {
     Write-Warning "Deployment failed or has timed out."
     return
@@ -63,21 +52,22 @@ $functionAppName = $deployment.Outputs["appName"].Value
 Start-Sleep -Seconds 10
 
 Write-Host "Assigning Graph API permissions to function app identity..."
-Install-Module AzureAD -Scope CurrentUser -Force
-$token = Get-AzAccessToken -ResourceTypeName AadGraph
-Connect-AzureAD -AadAccessToken $token.Token 
+
+Install-Module Microsoft.Graph -Force
+Connect-MgGraph -Identity -NoWelcome
 
 $permissions = "Application.ReadWrite.All", "Directory.Read.All"   
-$MSI = Get-AzADServicePrincipal -DisplayName $functionAppName
-Write-Host $MSI.Id
-$Graph = Get-AzADServicePrincipal -ApplicationId "00000003-0000-0000-c000-000000000000" # Microsoft Graph App ID (DON'T CHANGE)
-Write-Host $Graph.Id
+$MSI = Get-MgServicePrincipal -Filter "DisplayName eq '$functionAppName'"
+$Graph = Get-MgServicePrincipal -Filter "AppId eq '00000003-0000-0000-c000-000000000000'"  # Microsoft Graph App ID (DON'T CHANGE)
 
 foreach ($permission in $permissions) {
     Write-Host "Assigning $permission permission..."
-    $AppRole = $Graph.AppRole | Where-Object { $_.Value -eq $permission }
-    New-AzureAdServiceAppRoleAssignment -ObjectId $MSI.Id -PrincipalId $MSI.Id `
-        -ResourceId $Graph.Id -Id $AppRole.Id
+    $params = @{
+        principalId = $MSI.Id
+        resourceId = $Graph.Id
+        appRoleId = $Graph.AppRoles | Where-Object { $_.Value -eq $permission }
+    }
+    New-MgServiceAppRoleAssignment -ServicePrincipalId $MSI.Id  -BodyParameter $params
 }
 
 Write-Host "Deploying function app code..."
