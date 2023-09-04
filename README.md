@@ -51,5 +51,9 @@ cd azuread-expiring-creds-alert
 
 ![image](https://github.com/allanreyes/azuread-expiring-creds-alert/assets/15065640/d15dffe4-71f2-4fdb-8b17-c0ab1ae93f4f)
 
+8. Go back to the Azure Cloud Shell, type Y and then Enter/return.
+![image](https://github.com/allanreyes/azuread-expiring-creds-alert/assets/15065640/66b9f1fc-898e-4464-83c2-1accb368a6d4)
 
+9. In a matter of seconds, you should get an email that looks like this:
+![image](https://github.com/allanreyes/azuread-expiring-creds-alert/assets/15065640/33e0ca1b-98f7-4b16-85a9-570997bc2807)
 
