@@ -8,8 +8,7 @@ param emailTo string
 
 var resourceGroupName = 'rg-${suffix}'
 var appName = 'fn-${suffix}-${uniqueString(rg.id)}'
-var storageNameTemp = 'sa${suffix}${uniqueString(rg.id)}'
-var storageName = length(storageNameTemp) > 24 ? substring(storageNameTemp, 0, 24) : storageNameTemp
+var storageName = 'sa${uniqueString(rg.id)}'
 var logicAppName = 'la-${suffix}-${uniqueString(rg.id)}'
 
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
