@@ -13,7 +13,7 @@ A repository that contains an Azure Function App that sends admins a list of ent
 
 ## Azure deployment
 
-The following steps will deploy everything required for the app to run. It creates the services in Azure, assigns API permissions to the managed identity, and finally deploys the function code to the app service.
+The following steps will deploy everything required for the app to run. It creates the services in Azure, assigns API permissions to the managed identity, and finally deploys the function code to the app service. Because the managed identity needs to be given certain Graph API permissions, you'll need to use an Azure AD user account with a Global Administrator or Privileged Role Administrator role.
 
 > **IMPORTANT:** In order for the logic app to connect to Office 365 Outlook and send email notifications, you need to authorize the connection from within the portal. Follow the instructions and screenshots below.
 
