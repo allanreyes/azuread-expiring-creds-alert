@@ -30,12 +30,16 @@ cd azuread-expiring-creds-alert
 ```
 
 3. Provide new values for each prompt or use the default values by hitting Enter/return
-   
 
-4. Wait for the deployment to complete
+![image](https://github.com/allanreyes/azuread-expiring-creds-alert/assets/15065640/a31a5ee0-39a7-42bd-8979-52a8f8387c48)
 
-5. Open a new browser tab or use the current one, and click on the office365 API Connection resource
+
+4. Wait for the deployment to completef. This should take less than 5 minutes. When you get to this point, do not run the function yet. We'll go back to this prompt after authoprizing the connection to Office 365 Outlook.
+
+![image](https://github.com/allanreyes/azuread-expiring-creds-alert/assets/15065640/6a11e2c3-6be6-4ee5-a354-9faf416c3988)
+
+6. Open a new browser tab or use the current one, and click on the office365 API Connection resource
    
-6. Click on the Error message and then the Authorize button. Sign-in to your account, the one that will be sending out emails. Click Save.
+7. Click on the Error message and then the Authorize button. Sign-in to your account, the one that will be sending out emails. Click Save.
    
  
