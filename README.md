@@ -16,3 +16,24 @@ A repository that contains an Azure Function App that sends admins a list of ent
 The following steps will deploy everything required for the app to run. It creates the services in Azure, assigns API permissions to the managed identity, and finally deploys the function code to the app service.
 
 > **IMPORTANT:** In order for the logic app to connect to Office 365 Outlook and send email notifications, you need to authorize the connection from within the portal. Follow the instructions and screenshots below.
+
+1. Go to the Azure Portal and start a new Azure Cloud Shell session (PowerShell)
+
+2. Clone this repository, navigate inside the newly cloned directory, and run the deploy.ps1 file
+
+```
+git clone https://github.com/allanreyes/azuread-expiring-creds-alert.git
+cd azuread-expiring-creds-alert
+.\deploy.ps1
+```
+
+3. Provide new values for each prompt or use the default values by hitting Enter/return
+   
+
+4. Wait for the deployment to complete
+
+5. Open a new browser tab or use the current one, and click on the office365 API Connection resource
+   
+6. Click on the Error message and then the Authorize button. Sign-in to your account, the one that will be sending out emails. Click Save.
+   
+ 
