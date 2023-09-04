@@ -19,6 +19,8 @@ The following steps will deploy everything required for the app to run. It creat
 
 1. Go to the <a href="https://portal.azure.com" target="_blank">Azure Portal</a> and start a new Azure Cloud Shell session (PowerShell)
 
+![image](https://github.com/allanreyes/azuread-expiring-creds-alert/assets/15065640/76ccd6c7-2b41-4f83-9b94-784c72dba34f)
+
 2. Clone this repository, navigate inside the newly cloned directory, and run the deploy.ps1 file
 
 ```
