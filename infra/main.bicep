@@ -60,3 +60,4 @@ module logicApp './modules/logicApp.bicep' = {
 }
 
 output appName string = appName
+output functionAppKey string = functionApp.outputs.functionAppKey

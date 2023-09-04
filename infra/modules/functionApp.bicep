@@ -78,3 +78,6 @@ resource functionAppConfig 'Microsoft.Web/sites/config@2022-03-01' = {
     }
   }
 }
+
+var functioAppKey = listKeys('${functionApp.id}/host/default', '2022-03-01').masterKey
+output functionAppKey string = functioAppKey

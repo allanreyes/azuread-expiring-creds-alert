@@ -49,13 +49,15 @@ if ($deployment.ProvisioningState -ne "Succeeded") {
 }
 
 $functionAppName = $deployment.Outputs["appName"].Value
+$functionAppKey = $deployment.Outputs["functionAppKey"].Value
 Start-Sleep -Seconds 10
 
 Write-Host "Assigning Graph API permissions to function app identity..."
 
-if(Get-Module -ListAvailable -Name Microsoft.Graph) { 
+if (Get-Module -ListAvailable -Name Microsoft.Graph) { 
     Update-Module Microsoft.Graph
-} else {
+}
+else {
     Install-Module Microsoft.Graph -Force
 }
 
@@ -69,8 +71,8 @@ foreach ($permission in $permissions) {
     Write-Host "Assigning $permission permission..."
     $params = @{
         principalId = $MSI.Id
-        resourceId = $Graph.Id
-        appRoleId = $Graph.AppRoles | Where-Object { $_.Value -eq $permission } | Select-Object -ExpandProperty Id
+        resourceId  = $Graph.Id
+        appRoleId   = $Graph.AppRoles | Where-Object { $_.Value -eq $permission } | Select-Object -ExpandProperty Id
     }
     New-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $MSI.Id -BodyParameter $params
 }
@@ -80,3 +82,23 @@ Set-Location -Path src
 func azure functionapp publish $functionAppName --powershell 
 
 Write-Host "Completed"
+
+Write-Host "----------------------------------------"
+while ($true) {
+    Write-Host "Would you like to run the function now? (y/n)" -ForegroundColor Yellow
+    $runNow = Read-Host
+    if ($runNow -eq "y") {
+        $headers = @{
+            "x-functions-key" = $functionAppKey
+            "Content-Type"    = "application/json"
+        }
+        $url = "https://$functionAppName.azurewebsites.net/admin/functions/timer-get-expiring-credentials"
+        Invoke-RestMethod -Method "Post" -Uri $url `
+            -Headers $headers `
+            -Body "{}"
+    }
+    else {
+        break;
+    }   
+}
+
