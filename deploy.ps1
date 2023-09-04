@@ -69,9 +69,12 @@ Connect-AzureAD -AadAccessToken $token.Token
 
 $permissions = "Application.ReadWrite.All", "Directory.Read.All"   
 $MSI = Get-AzADServicePrincipal -DisplayName $functionAppName
+Write-Host $MSI.Id
 $Graph = Get-AzADServicePrincipal -ApplicationId "00000003-0000-0000-c000-000000000000" # Microsoft Graph App ID (DON'T CHANGE)
+Write-Host $Graph.Id
 
 foreach ($permission in $permissions) {
+    Write-Host "Assigning $permission permission..."
     $AppRole = $Graph.AppRole | Where-Object { $_.Value -eq $permission }
     New-AzureAdServiceAppRoleAssignment -ObjectId $MSI.Id -PrincipalId $MSI.Id `
         -ResourceId $Graph.Id -Id $AppRole.Id
