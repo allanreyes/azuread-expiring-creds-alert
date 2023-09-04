@@ -17,7 +17,7 @@ The following steps will deploy everything required for the app to run. It creat
 
 > **IMPORTANT:** In order for the logic app to connect to Office 365 Outlook and send email notifications, you need to authorize the connection from within the portal. Follow the instructions and screenshots below.
 
-1. Go to the Azure Portal and start a new Azure Cloud Shell session (PowerShell)
+1. Go to the <a href="https://portal.azure.com" target="_blank">Azure Portal</a> and start a new Azure Cloud Shell session (PowerShell)
 
 2. Clone this repository, navigate inside the newly cloned directory, and run the deploy.ps1 file
 
