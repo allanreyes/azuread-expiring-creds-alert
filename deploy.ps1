@@ -67,7 +67,7 @@ foreach ($permission in $permissions) {
         resourceId = $Graph.Id
         appRoleId = $Graph.AppRoles | Where-Object { $_.Value -eq $permission }
     }
-    New-MgServiceAppRoleAssignment -ServicePrincipalId $MSI.Id  -BodyParameter $params
+    New-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $MSI.Id  -BodyParameter $params
 }
 
 Write-Host "Deploying function app code..."
