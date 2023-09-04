@@ -38,8 +38,12 @@ cd azuread-expiring-creds-alert
 
 ![image](https://github.com/allanreyes/azuread-expiring-creds-alert/assets/15065640/6a11e2c3-6be6-4ee5-a354-9faf416c3988)
 
-6. Open a new browser tab or use the current one, and click on the office365 API Connection resource
+6. Open a new browser tab or use the current one, and click on the office365 API Connection resource inside the resource groups's overview tab
+
+![image](https://github.com/allanreyes/azuread-expiring-creds-alert/assets/15065640/167e8e65-7819-43b9-8667-5ad5cf553f03)
+
    
 7. Click on the Error message and then the Authorize button. Sign-in to your account, the one that will be sending out emails. Click Save.
    
- 
+ ![image](https://github.com/allanreyes/azuread-expiring-creds-alert/assets/15065640/eddfcbb1-01bb-4714-9851-19b3fc5c1165)
+
