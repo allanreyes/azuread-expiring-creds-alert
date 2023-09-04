@@ -49,7 +49,8 @@ if ($deployment.ProvisioningState -ne "Succeeded") {
 }
 
 $functionAppName = $deployment.Outputs["appName"].Value
-$functionAppKey = $deployment.Outputs["functionAppKey"].Value
+$resourceGroupName = $deployment.Outputs["resourceGroupName"].Value
+
 Start-Sleep -Seconds 10
 
 Write-Host "Assigning Graph API permissions to function app identity..."
@@ -84,6 +85,8 @@ func azure functionapp publish $functionAppName --powershell
 Write-Host "Completed"
 Write-Host "IMPORTANT: Make sure you authorize the Office 365 connection before running the function." -ForegroundColor Green
 Write-Host "----------------------------------------"
+
+$functionAppKey = az functionapp keys list -g $resourceGroupName -n $functionAppName --query masterKey -o tsv
 
 while ($true) {
     Write-Host "Would you like to run the function now? (y/n)" -ForegroundColor Yellow
