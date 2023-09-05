@@ -3,13 +3,20 @@ A repository that contains an Azure Function App that sends admins a list of ent
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/allanreyes/azuread-expiring-creds-alert)
 
-## Table of Contents
-
-## Architecture Diagram
-
 ## Features
 
+Organizations can access a list of applications along with some basic infromation from within Azure AD portal: https://portal.azure.com/#view/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/~/RegisteredApps
+
+![image](https://github.com/allanreyes/azuread-expiring-creds-alert/assets/15065640/0590ea73-572b-4b1d-bf34-a6962b5893fa)
+
+Unused applications should be removed to boost security and ensure good application hygiene. This prevents the possibility of someone discovering and exploiting an unused application to access tokens
+[(Source)](https://learn.microsoft.com/en-us/azure/active-directory/reports-monitoring/recommendation-remove-unused-apps#:~:text=Removing%20unused%20applications%20improves%20the%20security%20posture%20and%20promotes%20good%20application%20hygiene.%20It%20reduces%20the%20risk%20of%20application%20compromise%20by%20someone%20discovering%20an%20unused%20application%20and%20misusing%20it%20to%20get%20tokens.). Admins also need to make sure that credentials of critical apps are renewed well before the expire to avoid unplanned downtimes.
+
+There's currently no built-in way for admins to get regular notifications on expiring and expired credentials and this is the limitation that this project addresses. If you follow the intructions below, you'll have an Azure Function App with a timer trigger that scans your tenant for expiring and expired credentials (certificates and secrets), before calling a Logic App that sends the email to an adminstrator or mailing list.
+
 * You can configure the number of days before a credential expires that is included in the list. For example, if you choose **30** during the deployment, then you will receive a list of all the expired credentials and those that are expiring within 30 days from when the report is generated.
+* 
+## Architecture Diagram
 
 ## Azure deployment
 
